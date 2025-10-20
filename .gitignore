@@ -1,0 +1,34 @@
+# Visual Studio
+.vs/
+.vscode/
+*.user
+*.suo
+
+# Build results
+bin/
+obj/
+out/
+[Bb]uild/
+[Ll]ogs/
+
+# .NET artifacts
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# NuGet
+*.nupkg
+*.snupkg
+packages/
+*.nuspec
+
+# EF Core
+Migrations/
+
+# Others
+*.log
+*.tmp
+*.cache
+*.DS_Store
+Thumbs.db
+CryptoPriceTracker.Api/crypto.db
