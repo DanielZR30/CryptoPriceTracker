@@ -83,14 +83,15 @@ This page must:
    ```
 4. Generate your own migrations and update the database:
    ```bash
-   dotnet ef migrations add InitialCreate
-   dotnet ef database update
+   dotnet ef migrations add InitialCreate --project "CryptoPriceTracker.Infrastructure" --startup-project "CryptoPriceTracker.Api"
+   dotnet ef database update --project "CryptoPriceTracker.Infrastructure" --startup-project "CryptoPriceTracker.Api"
    ```
-5. Run the project:
+5. Update the env variables to add the CoinGecko Api Key
+6. Run the project:
    ```bash
    dotnet run
    ```
-6. Navigate to `http://localhost:5000` to test the Razor page.
+7. Navigate to `http://localhost:5000` to test the Razor page.
 
 ---
 
@@ -151,3 +152,9 @@ Before submitting your solution, please ensure the following items are completed
 ---
 
 Good luck, and thank you for taking the time to complete this challenge!
+
+# Important Notes
+- Implemented Task to manage parallel request to coingecko api, this to avoid waiting to much time
+- As there were many request to the API it was decided to make a sort by last update to get the coins -without any update in our system in the last 30 min
+- it was assumed that it is necessary to take all the coins on the API coin gecko
+- It was required to get the coingecko api key to get the assets' icon so please check the shared file or send me an email to get the key or you can use yours
