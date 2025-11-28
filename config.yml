@@ -1,0 +1,7 @@
+tunnel: crypto-tecnical
+credentials-file: /etc/cloudflared/crypto-tecnical.json
+
+ingress:
+  - hostname: crypto-tecnical.mymoody.life
+    service: http://crypto-price-tracker:80
+  - service: http_status:404

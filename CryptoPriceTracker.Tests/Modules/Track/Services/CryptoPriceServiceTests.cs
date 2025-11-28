@@ -249,5 +249,44 @@ namespace CryptoPriceTracker.Tests.Modules.Track.Services
             Assert.Single(result.Items);
             Assert.Equal(0m, result.Items.First().ChangePercentage);
         }
+
+        [Fact]
+        public async Task UpdatePricesAsync_ShouldUpdateNewAssetsInSameRun()
+        {
+            // Arrange
+            var coinList = new List<CoinData>
+            {
+                new CoinData { Id = "bitcoin", Symbol = "btc", Name = "Bitcoin" },
+                new CoinData { Id = "ethereum", Symbol = "eth", Name = "Ethereum" },
+                new CoinData { Id = "ripple", Symbol = "xrp", Name = "Ripple" }
+            };
+
+            var existingAssets = new List<CryptoAsset>
+            {
+                new CryptoAsset { Id = 1, ExternalId = "bitcoin", Name = "Bitcoin", Symbol = "btc" },
+                new CryptoAsset { Id = 2, ExternalId = "ethereum", Name = "Ethereum", Symbol = "eth" },
+            };
+
+            var lastPriceHistories = new Dictionary<int, CryptoPriceHistory>
+            {
+                { 1, new CryptoPriceHistory { CryptoAssetId = 1, Date = DateTime.UtcNow.AddMinutes(-10) } },
+                { 2, new CryptoPriceHistory { CryptoAssetId = 2, Date = DateTime.UtcNow.AddMinutes(-60) } }
+            };
+
+            _mockCoinGeckoProxy.Setup(p => p.GetCoinList()).ReturnsAsync(coinList);
+            _mockCryptoAssetRepository.Setup(r => r.GetAllAsync()).ReturnsAsync(existingAssets);
+            _mockCryptoAssetRepository.Setup(r => r.GetLastPriceHistoriesAsync(It.IsAny<List<int>>()))
+                                      .ReturnsAsync(lastPriceHistories);
+            _mockCoinGeckoProxy.Setup(p => p.GetCoinMarket(It.IsAny<IEnumerable<string>>(), It.IsAny<string>()))
+                               .ReturnsAsync(new List<CoinMarketData>());
+
+            // Act
+            await _cryptoPriceService.UpdatePricesAsync();
+
+            // Assert
+            _mockCoinGeckoProxy.Verify(p => p.GetCoinMarket(It.Is<IEnumerable<string>>(ids =>
+                ids.Contains("ripple")),
+                It.IsAny<string>()), Times.AtLeastOnce());
+        }
     }
 }

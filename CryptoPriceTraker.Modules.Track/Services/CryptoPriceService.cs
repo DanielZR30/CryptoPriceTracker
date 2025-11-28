@@ -57,6 +57,7 @@ namespace CryptoPriceTraker.Modules.Track.Services
                 {
                     newAssets.ForEach(asset => _cryptoAssetRepository.AddAsset(asset));
                     await _unitOfWork.SaveChangesAsync();
+                    cryptoAssets.AddRange(newAssets);
                     newAssets.ForEach(asset => cryptoAssetsDict[asset.ExternalId] = asset);
                 }
 

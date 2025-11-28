@@ -1,0 +1,30 @@
+services:
+  crypto-price-tracker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: crypto-price-tracker
+    ports:
+      - "8080:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ConnectionStrings__Default=Data Source=/app/crypto.db
+      - CoinGecko__ApiKey=CG-BdMEHPRjUxfZ6Qz6LxyyLDQC
+    networks:
+      - crypto_network
+
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    container_name: crypto-cloudflared
+    depends_on:
+      - crypto-price-tracker
+    command: tunnel run crypto-tecnical
+    volumes:
+      - ./config.yml:/etc/cloudflared/config.yml
+      - C:/Users/dzapa/.cloudflared:/etc/cloudflared
+    networks:
+      - crypto_network
+
+networks:
+  crypto_network:
+    driver: bridge
